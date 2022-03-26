@@ -1,4 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
+import { NewUserForm } from "./components/NewUserForm";
 
 type User = {
   id: string;
@@ -13,6 +14,7 @@ const GET_USER = gql`
     }
   }
 `;
+
 function App() {
   const { data, loading } = useQuery<{ users: User[] }>(GET_USER);
   console.log(data);
@@ -26,6 +28,7 @@ function App() {
           <li key={user.id}>{user.name}</li>
         ))}
       </ul>
+      <NewUserForm />
     </div>
   );
 }
