@@ -1,6 +1,9 @@
+import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { User } from "../models/User";
+
+const prisma = new PrismaClient();
 
 // Query: Buscar dados
 
@@ -12,41 +15,39 @@ export class UserResolver {
 
   @Query(() => [User])
   async users() {
-    return this.data;
+    const users = await prisma.user.findMany();
+    return users;
   }
 
   @Mutation(() => User)
   async createUser(@Arg("name") name: string) {
-    const user = { id: crypto.randomUUID(), name };
-
-    this.data.push(user);
+    const user = await prisma.user.create({
+      data: {
+        id: crypto.randomUUID(),
+        name,
+      },
+    });
 
     return user;
   }
 
   @Mutation(() => User)
   async updateUser(@Arg("id") id: string, @Arg("name") name: string) {
-    const user = this.data.find((user) => user.id === id);
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    user.name = name;
+    const user = await prisma.user.update({
+      where: { id },
+      data: {
+        name,
+      },
+    });
 
     return user;
   }
 
   @Mutation(() => User)
   async deleteUser(@Arg("id") id: string) {
-    const user = this.data.find((user) => user.id === id);
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    this.data = this.data.filter((user) => user.id !== id);
-
+    const user = await prisma.user.delete({
+      where: { id },
+    });
     return user;
   }
 }
