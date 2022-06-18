@@ -7,12 +7,10 @@ const prisma = new PrismaClient();
 
 // Query: Buscar dados
 
-// Mutation: Criat,alterar ou deletar
+// Mutation: Criar,alterar ou deletar
 
 @Resolver()
 export class UserResolver {
-  private data: User[] = [];
-
   @Query(() => [User])
   async users() {
     const users = await prisma.user.findMany();
@@ -20,11 +18,12 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
-  async createUser(@Arg("name") name: string) {
+  async createUser(@Arg("name") name: string, @Arg("email") email: string) {
     const user = await prisma.user.create({
       data: {
         id: crypto.randomUUID(),
         name,
+        email,
       },
     });
 
@@ -32,11 +31,16 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
-  async updateUser(@Arg("id") id: string, @Arg("name") name: string) {
+  async updateUser(
+    @Arg("id") id: string,
+    @Arg("name") name: string,
+    @Arg("email") email: string
+  ) {
     const user = await prisma.user.update({
       where: { id },
       data: {
         name,
+        email,
       },
     });
 
