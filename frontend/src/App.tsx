@@ -3,13 +3,15 @@ import { NewUserForm } from "./components/NewUserForm";
 
 type User = {
   id: string;
-  name: string;
+  name?: string;
+  email?: string;
 };
 
 export const GET_USER = gql`
   query {
     users {
       id
+      email
       name
     }
   }
@@ -25,7 +27,9 @@ function App() {
     <div>
       <ul>
         {data?.users.map((user) => (
-          <li key={user.id}>{user.name}</li>
+          <li key={user.id}>
+            {user.id} {user.name} {user.email}
+          </li>
         ))}
       </ul>
       <NewUserForm />

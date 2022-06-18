@@ -4,15 +4,17 @@ import { GET_USER } from "../App";
 import { client } from "../lib/apollo";
 
 const CREATE_USER = gql`
-  mutation ($name: String!) {
-    createUser(name: $name) {
+  mutation ($name: String!, $email: String!) {
+    createUser(name: $name, email: $email) {
       id
       name
+      email
     }
   }
 `;
 export function NewUserForm() {
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
 
   async function handleCreateUser(event: FormEvent) {
@@ -24,10 +26,10 @@ export function NewUserForm() {
     await createUser({
       variables: {
         name,
+        email,
       },
       update: (cache, { data: { createUser } }) => {
         const { users } = client.readQuery({ query: GET_USER });
-
         cache.writeQuery({
           query: GET_USER,
           data: {
@@ -44,6 +46,11 @@ export function NewUserForm() {
         type='text'
         value={name}
         onChange={(e) => setName(e.target.value)}
+      />
+      <input
+        type='text'
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
       />
       <button type='submit'>Send</button>
     </form>
